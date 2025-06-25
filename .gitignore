@@ -1,0 +1,18 @@
+node_modules
+dist
+.history
+
+# Env
+.env
+
+# Generated content
+generated_websites
+generated_mockups
+
+# Logs / cache
+npm-debug.log*
+.DS_Store
+
+# Test files
+test_*.mts
+*test*.sh
