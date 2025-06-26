@@ -1,0 +1,9 @@
+{
+  "name": "el-guitaro",
+  "version": "1.0.0",
+  "description": "El guitaro est un fast food ciblant les enfants avec un style rustique.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

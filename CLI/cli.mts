@@ -24,6 +24,7 @@ interface AgentConfig {
 interface Config {
   api_url: string;
   agents: AgentConfig[];
+  bearer_token?: string;
 }
 
 interface ChatMessage {
@@ -41,11 +42,20 @@ class ConfigManager {
   async getConfig(): Promise<Config> {
     if (this.config) return this.config;
 
+    // Le bearer token est TOUJOURS requis depuis le .env
+    const bearerToken = process.env.BEARER;
+    if (!bearerToken) {
+      console.error(chalk.red('❌ ERREUR: La variable BEARER doit être définie dans le fichier .env du CLI'));
+      console.error(chalk.yellow('💡 Créez un fichier CLI/.env avec: BEARER=votre-token'));
+      process.exit(1);
+    }
+
     // 1. Try environment variables first
     if (process.env.API_URL) {
       this.config = {
         api_url: process.env.API_URL,
-        agents: []
+        agents: [],
+        bearer_token: bearerToken
       };
       return this.config;
     }
@@ -55,6 +65,9 @@ class ConfigManager {
       const configPath = path.join(__dirname, 'agents_config.json');
       const configData = await fs.readFile(configPath, 'utf-8');
       this.config = JSON.parse(configData);
+      
+      // TOUJOURS utiliser le bearer token du .env
+      this.config!.bearer_token = bearerToken;
       
       return this.config!;
     } catch (error) {
@@ -67,7 +80,8 @@ class ConfigManager {
             name: "SallyO",
             description: "Un agent IA qui peut aider les utilisateurs à explorer les opportunités dans le CRM Reply."
           }
-        ]
+        ],
+        bearer_token: bearerToken
       };
       return this.config;
     }
@@ -116,9 +130,16 @@ class ChatSession {
   }
 
   private async makeRequest(url: string, payload: any): Promise<Response> {
+    const config = await this.configManager.getConfig();
+    
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
+
+    if (config.bearer_token) {
+      headers['Authorization'] = `Bearer ${config.bearer_token}`;
+      this.log(`Utilisation du token d'authentification (longueur: ${config.bearer_token.length})`);
+    }
 
     this.log(`URL: ${url}`);
     this.log(`Payload: ${JSON.stringify(payload, null, 2)}`);
@@ -143,6 +164,14 @@ class ChatSession {
       payload.conversation_id = this.conversationId;
       payload.chat_id = this.conversationId;
       this.log(`Utilisation de l'ID de conversation: ${this.conversationId}`);
+    }
+
+    if (config.bearer_token) {
+      payload.context = {
+        configurable: {
+          __bearer_token: config.bearer_token
+        }
+      };
     }
 
     try {
@@ -287,6 +316,14 @@ class ChatSession {
       this.log(`Utilisation de l'ID de conversation: ${this.conversationId}`);
     }
 
+    if (config.bearer_token) {
+      payload.context = {
+        configurable: {
+          __bearer_token: config.bearer_token
+        }
+      };
+    }
+
     try {
       const response = await this.makeRequest(url, payload);
 
@@ -372,8 +409,12 @@ async function checkApiConnection(apiUrl?: string, debug: boolean = false): Prom
   const config = await configManager.getConfig();
   
   const baseUrl = apiUrl || config.api_url;
+  const token = config.bearer_token;
   
   const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   try {
     if (debug) {
@@ -400,8 +441,12 @@ async function getAvailableAgents(apiUrl?: string): Promise<AgentConfig[]> {
   const config = await configManager.getConfig();
   
   const baseUrl = apiUrl || config.api_url;
+  const token = config.bearer_token;
   
   const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   try {
     const response = await fetch(`${baseUrl}/agents`, { headers });

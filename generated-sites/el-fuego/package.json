@@ -1,0 +1,9 @@
+{
+  "name": "el-fuego",
+  "version": "1.0.0",
+  "description": "El Fuego est un site destiné aux enfants, avec un style moderne et des couleurs rouge et bleu.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

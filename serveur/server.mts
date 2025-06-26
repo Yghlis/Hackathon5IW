@@ -73,7 +73,19 @@ async function loadAgentsConfig(): Promise<AgentConfig[]> {
   }
 }
 
+// Middleware d'authentification
+function authenticateToken(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
+  if (!token && process.env.REQUIRE_AUTH !== 'false') {
+    return res.status(401).json({ error: 'Token d\'accès requis' });
+  }
+
+  // Store token in request for later use
+  (req as any).token = token;
+  next();
+}
 
 // Middleware de gestion des erreurs
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
@@ -113,7 +125,7 @@ app.use(cors({
   origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -145,7 +157,7 @@ app.get('/health', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/agents', async (req: Request, res: Response) => {
+app.get('/agents', authenticateToken, async (req: Request, res: Response) => {
   try {
     const agents = await loadAgentsConfig();
     res.json(agents);
@@ -158,7 +170,7 @@ app.get('/agents', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/:agentId/invoke', async (req: Request, res: Response) => {
+app.post('/:agentId/invoke', authenticateToken, async (req: Request, res: Response) => {
   const { agentId } = req.params;
   const userInput: UserInput = req.body;
   
@@ -216,7 +228,7 @@ app.post('/:agentId/invoke', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/:agentId/stream', async (req: Request, res: Response) => {
+app.post('/:agentId/stream', authenticateToken, async (req: Request, res: Response) => {
   const { agentId } = req.params;
   const userInput: UserInput = req.body;
   
@@ -372,7 +384,7 @@ app.post('/:agentId/stream', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/:agentId/stop', async (req: Request, res: Response) => {
+app.post('/:agentId/stop', authenticateToken, async (req: Request, res: Response) => {
   const { agentId } = req.params;
   const { thread_id } = req.body;
   
@@ -404,7 +416,7 @@ app.post('/:agentId/stop', async (req: Request, res: Response) => {
 });
 
 // Route pour obtenir l'historique d'une conversation
-app.get('/conversations/:threadId', async (req: Request, res: Response) => {
+app.get('/conversations/:threadId', authenticateToken, async (req: Request, res: Response) => {
   const { threadId } = req.params;
   
   try {
@@ -428,7 +440,7 @@ app.get('/conversations/:threadId', async (req: Request, res: Response) => {
 });
 
 // Route pour lister toutes les conversations
-app.get('/conversations', async (req: Request, res: Response) => {
+app.get('/conversations', authenticateToken, async (req: Request, res: Response) => {
   try {
     const conversationList = Array.from(conversations.values()).map(conv => ({
       thread_id: conv.thread_id,
@@ -490,6 +502,7 @@ async function startServer() {
       console.log('');
       console.log('🔑 Variables d\'environnement:');
       console.log(`  PORT=${PORT}`);
+      console.log(`  REQUIRE_AUTH=${process.env.REQUIRE_AUTH || 'true'}`);
       console.log('');
       console.log('💡 Pour tester avec le CLI:');
       console.log('  npm run cli check');

@@ -1,238 +1,302 @@
-# 🤖 Agent Chat Interface
+# 🤖 Agent CLI & Server
 
-## Vue d'ensemble
+Un CLI et serveur JavaScript/TypeScript pour tester et interagir avec des agents IA.
 
-Ce projet transforme votre interface CLI d'agents IA en une **interface web moderne avec Vue.js**. Il permet d'interagir facilement avec différents agents IA via une interface de chat intuitive et moderne.
+## 📦 Installation
 
-## 🏗️ Architecture
+```bash
+# Installer les dépendances
+npm install
 
+# Copier et configurer les variables d'environnement
+cp .env.example .env
 ```
-Hackathon5IW/
-├── 🎨 ui/                    # Interface Vue.js (Frontend)
-├── 🔧 serveur/               # API Express.js (Backend)
-├── 🤖 Agents/                # Agents IA avec LangGraph
-│   └── design/               # Agent de conception web
-├── 📱 CLI/                   # Interface ligne de commande (legacy)
-└── 🚀 start.sh              # Script de démarrage automatique
-```
-
-## ✨ Fonctionnalités
-
-### Interface Web
-- 🎯 **Sélection d'agents** : Interface intuitive pour choisir l'agent
-- 💬 **Chat en temps réel** : Streaming des réponses avec animation de frappe
-- 🎨 **Design moderne** : Interface responsive avec dégradés et glassmorphisme
-- 🐛 **Mode debug** : Inspection des appels API en temps réel
-- 📱 **Mobile-friendly** : Optimisé pour tous les écrans
-- 🔄 **Gestion des conversations** : Contexte maintenu par conversation
-
-### Backend
-- 🔌 **API REST** : Endpoints pour la gestion des agents
-- 📡 **Streaming SSE** : Réponses en temps réel
-- 💾 **Persistence** : Gestion des conversations avec thread_id
-- 🛡️ **CORS configuré** : Prêt pour le développement et la production
-
-### Agents disponibles
-- 🎨 **Design Agent** : Création de maquettes web avec HTML/CSS automatique
 
 ## 🚀 Démarrage rapide
 
-### Prérequis
-- **Node.js** (v18+)
-- **npm** ou **yarn**
-- **LM Studio** ou **OpenAI API** (pour les modèles IA)
+### 🌐 Interface Web (Recommandé)
 
-### Méthode 1 : Script automatique (Recommandé)
 ```bash
-./start.sh
+# Installer toutes les dépendances
+npm run install-all
+
+# Démarrer backend + frontend en parallèle
+npm start
 ```
 
-### Méthode 2 : Démarrage manuel
+Accédez à l'interface sur **`http://localhost:3000`** 🎨
+
+### 🖥️ CLI (Alternative)
+
 ```bash
-# 1. Installer les dépendances
-npm install
-cd ui && npm install && cd ..
+# Démarrer uniquement le serveur backend
+npm run server
 
-# 2. Démarrer le backend (Terminal 1)
-cd serveur
-npm run start
-
-# 3. Démarrer le frontend (Terminal 2)
-cd ui
-npm run dev
+# Dans un autre terminal, utiliser le CLI
+npm run cli check     # Vérifier la connectivité
+npm run cli chat      # Démarrer une session de chat
 ```
 
-### Accès à l'application
-- 🌐 **Interface Web** : http://localhost:5173
-- 🔧 **API Backend** : http://localhost:8080
-- 🏥 **Health Check** : http://localhost:8080/health
+### 🔧 Options avancées
 
-## 📋 Guide d'utilisation
-
-### 1. Sélection d'un agent
-- Utilisez le sélecteur en haut de la page
-- Ou cliquez sur une carte d'agent sur l'écran d'accueil
-
-### 2. Conversation
-- Tapez votre message dans la zone de texte
-- **Entrée** : Envoyer le message
-- **Maj + Entrée** : Nouvelle ligne
-- Les réponses s'affichent en temps réel avec animation
-
-### 3. Fonctionnalités avancées
-- **🔄 Nouvelle conversation** : Réinitialise le contexte
-- **🐛 Mode Debug** : Affiche les détails techniques des appels
-- **⏳ Indicateur de frappe** : Animation pendant la génération
-
-## 🛠️ Configuration
-
-### Backend (`serveur/server.mts`)
-```typescript
-const PORT = process.env.PORT || 8080;
-const API_BASE_URL = "http://localhost:8080";
-```
-
-### Frontend (`ui/src/App.vue`)
-```typescript
-const API_BASE_URL = 'http://localhost:8080'
-```
-
-### Proxy Vite (`ui/vite.config.js`)
-Les appels API sont automatiquement redirigés vers le backend :
-- `/agents` → `http://localhost:8080/agents`
-- `/health` → `http://localhost:8080/health`
-- `/{agentId}/stream` → `http://localhost:8080/{agentId}/stream`
-
-## 🤖 Gestion des agents
-
-### Ajouter un nouvel agent
-
-1. **Créer l'agent** dans `Agents/`
-```typescript
-// Agents/mon-agent/mon-agent.mts
-export const monAgent = createReactAgent({
-  prompt: monPrompt,
-  llm: agentModel,
-  tools: [mesOutils],
-  checkpointSaver: agentCheckpointer,
-});
-```
-
-2. **Enregistrer dans le registre** (`serveur/agents-registry.mts`)
-```typescript
-import { monAgent } from '../Agents/mon-agent/mon-agent.mts';
-
-export const AGENTS_REGISTRY: Record<string, AgentInfo> = {
-  // ... autres agents
-  monAgent: {
-    id: 'mon-agent',
-    name: 'Mon Agent',
-    description: 'Description de mon agent',
-    agent: monAgent
-  }
-};
-```
-
-3. L'agent apparaîtra automatiquement dans l'interface !
-
-## 🔧 Scripts disponibles
-
-### Projet principal
 ```bash
-npm run start        # Démarrer le backend
-npm run dev          # Mode développement
-npm run build        # Build de production
+# Démarrer uniquement le backend
+npm run server        # Mode production
+npm run dev          # Mode développement avec rechargement
+
+# Démarrer uniquement le frontend  
+npm run frontend     
+
+# CLI avec options
+npm run cli chat --agent myges --debug
 ```
 
-### Interface Vue.js (`ui/`)
-```bash
-npm run dev          # Serveur de développement
-npm run build        # Build de production  
-npm run preview      # Aperçu du build
+## 🔧 Configuration
+
+### Variables d'environnement
+
+Créez un fichier `.env` avec les variables suivantes :
+
+```env
+# Configuration API
+API_URL=http://localhost:8080
+PORT=8080
+
+# Authentification (optionnelle)
+BEARER_TOKEN=votre-token-ici
+REQUIRE_AUTH=false
+
+# 🚀 Configuration ChatGPT (OBLIGATOIRE)
+OPENAI_API_KEY=
+
+# Autres clés API
+TAVILY_API_KEY=tvly-...
 ```
 
-## 🐛 Dépannage
+### Configuration des agents
 
-### Le backend ne démarre pas
-```bash
-# Vérifier si le port 8080 est libre
-lsof -i :8080
+Modifiez le fichier `agents_config.json` pour configurer vos agents :
 
-# Vérifier les dépendances
-npm install
-```
-
-### L'interface ne se connecte pas
-- Vérifier que le backend est démarré sur le port 8080
-- Ouvrir les outils de développement (F12) pour voir les erreurs
-- Activer le mode Debug dans l'interface
-
-### Les agents ne se chargent pas
-- Vérifier que LM Studio est démarré (si vous l'utilisez)
-- Vérifier la configuration des modèles dans les agents
-- Consulter les logs du serveur
-
-## 📱 Migration CLI → Web
-
-Votre ancienne interface CLI dans `CLI/cli.mts` reste fonctionnelle, mais la nouvelle interface web offre :
-
-| Fonctionnalité | CLI | Interface Web |
-|----------------|-----|---------------|
-| Sélection d'agent | Menu textuel | Interface graphique |
-| Streaming | Terminal | Animation temps réel |
-| Debug | Logs texte | Panel dédié |
-| Multi-plateforme | Terminal seulement | Navigateur |
-| Partage | ❌ | URL partageable |
-
-## 🎨 Personnalisation
-
-### Thème de l'interface
-Le design utilise un dégradé moderne et du glassmorphisme. Pour personnaliser :
-
-```css
-/* ui/src/App.vue */
-#app {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+```json
+{
+  "api_url": "http://localhost:8080",
+  "agents": [
+    {
+      "id": "sallyO",
+      "name": "SallyO",
+      "description": "Un agent IA spécialisé dans les opportunités CRM"
+    }
+  ]
 }
 ```
 
-### Couleurs des messages
-```css
-.message.user .message-content {
-  background: #007bff; /* Bleu pour l'utilisateur */
-}
+## 📡 Endpoints API
 
-.message-content {
-  background: #f0f0f0; /* Gris pour l'agent */
+### Vérification de santé
+```http
+GET /health
+```
+
+### Liste des agents
+```http
+GET /agents
+Authorization: Bearer your-token
+```
+
+### Invocation directe
+```http
+POST /:agentId/invoke
+Authorization: Bearer your-token
+Content-Type: application/json
+
+{
+  "message": "Votre message",
+  "thread_id": "optional-thread-id"
 }
 ```
 
-## 🚀 Déploiement
+### Streaming SSE
+```http
+POST /:agentId/stream
+Authorization: Bearer your-token
+Content-Type: application/json
 
-### Développement
-Le projet est configuré pour le développement local avec hot-reload.
+{
+  "message": "Votre message",
+  "thread_id": "optional-thread-id"
+}
+```
 
-### Production
+### Arrêter la génération
+```http
+POST /:agentId/stop
+Authorization: Bearer your-token
+Content-Type: application/json
+
+{
+  "thread_id": "thread-id-to-stop"
+}
+```
+
+### Gestion des conversations
+```http
+GET /conversations
+GET /conversations/:threadId
+Authorization: Bearer your-token
+```
+
+## 💬 Utilisation du CLI
+
+### Commandes spéciales pendant le chat
+
+- `!clear` - Réinitialiser la conversation
+- `!debug` - Basculer le mode debug
+- `exit` - Quitter le chat
+
+### Options de ligne de commande
+
 ```bash
-# Build du frontend
-cd ui && npm run build
+# Commande check
+npm run cli check [options]
+  --api-url <url>        URL de l'API
+  --bearer-token <token> Token d'authentification
+  -d, --debug           Mode debug
 
-# Le frontend buildé sera dans ui/dist/
-# Servir les fichiers statiques avec votre serveur web préféré
+# Commande chat
+npm run cli chat [options]
+  -a, --agent <id>       ID de l'agent
+  -i, --invoke          Mode invoke (pas de streaming)
+  --api-url <url>        URL de l'API
+  --bearer-token <token> Token d'authentification
+  -d, --debug           Mode debug
+  --no-context          Désactiver le contexte
 ```
 
-## 🤝 Contribution
+## 🎨 Interface Web
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/ma-feature`)
-3. Commit les changements (`git commit -m 'Ajout de ma feature'`)
-4. Push vers la branche (`git push origin feature/ma-feature`)
-5. Ouvrir une Pull Request
+Une interface moderne et élégante accessible sur `http://localhost:3000` avec :
+
+### ✨ Fonctionnalités
+- 💬 **Chat en temps réel** avec streaming SSE
+- 🌤️ **Agent météo intelligent** avec beaucoup d'émojis  
+- 🎯 **Suggestions rapides** (site vitrine, boutique, portfolio)
+- 📱 **Design responsive** adapté mobile/desktop
+- 🔄 **Conversations persistantes** avec contexte
+- 🐛 **Mode debug** intégré
+- 🌈 **Effet de texte dégradé animé** sur le titre d'accueil
+- 💻 **Interface pleine largeur** optimisée
+
+### 🚀 Technologies
+- **Vue 3** + TypeScript + Composition API
+- **Server-Sent Events** pour le streaming temps réel  
+- **CSS moderne** avec dégradés animés et backdrop-filter
+- **ChatGPT GPT-4o** comme moteur d'IA
+- **Interface moderne** inspirée des meilleures pratiques UX
+- **Animations fluides** et transitions optimisées
+
+## 🔄 Streaming et événements SSE
+
+Le serveur supporte les Server-Sent Events avec les types d'événements suivants :
+
+- `stream_start` - Début du streaming
+- `stream_token` - Token de réponse
+- `stream_end` - Fin du streaming
+- `tool_execution_start` - Début d'utilisation d'outil
+- `tool_execution_complete` - Fin d'utilisation d'outil
+- `tool_execution_error` - Erreur d'outil
+- `error` - Erreur générale
+
+## 🛠️ Développement
+
+### Structure du projet
+
+```
+myges-agent/
+├── agent.mts              # Agent LangChain original
+├── cli.mts               # CLI pour tester les agents
+├── server.mts            # Serveur Express.js
+├── agents_config.json    # Configuration des agents
+├── package.json          # Dépendances et scripts
+└── README.md            # Documentation
+```
+
+### Scripts disponibles
+
+```bash
+npm run cli      # Lancer le CLI
+npm run server   # Démarrer le serveur
+npm run dev      # Mode développement avec rechargement
+```
+
+### Intégration avec de vrais agents
+
+Pour remplacer le `MockAgent` par de vrais agents :
+
+1. Modifiez la classe `MockAgent` dans `server.mts`
+2. Intégrez avec LangChain, OpenAI, ou votre framework préféré
+3. Adaptez les méthodes `generateResponse` et `invokeResponse`
+
+## 🔐 Sécurité
+
+- L'authentification par token Bearer est optionnelle (configurable)
+- Les tokens sont stockés en mémoire côté serveur
+- Les conversations sont en mémoire (remplacer par une DB en production)
+- CORS configuré pour accepter toutes les origines (à restreindre en production)
+
+## 📝 Exemples d'utilisation
+
+### Test rapide
+
+```bash
+# Terminal 1 - Démarrer le serveur
+npm run server
+
+# Terminal 2 - Tester la connectivité
+npm run cli check
+
+# Terminal 3 - Commencer à chatter
+npm run cli chat
+```
+
+### Avec authentification
+
+```bash
+# Avec token dans .env
+BEARER_TOKEN=mon-super-token npm run server
+
+# Utiliser le même token dans le CLI
+npm run cli chat --bearer-token mon-super-token
+```
+
+### Mode debug
+
+```bash
+# Voir tous les détails des requêtes
+npm run cli chat --debug
+```
+
+## 🚨 Limitations actuelles
+
+- Agents simulés (MockAgent)
+- Stockage en mémoire uniquement
+- Pas de persistance des conversations
+- Authentification basique
+- Pas de rate limiting
+
+## 🎯 Prochaines étapes
+
+- [ ] Intégration avec de vrais agents LangChain
+- [ ] Base de données pour la persistance
+- [ ] Authentification robuste
+- [ ] Rate limiting
+- [ ] Interface web
+- [ ] Docker
+- [ ] Tests automatisés
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+MIT
 
 ---
 
-**Bon développement ! 🚀** 
+🚀 **Prêt à discuter avec vos agents IA !** 

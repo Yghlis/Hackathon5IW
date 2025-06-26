@@ -1,0 +1,9 @@
+{
+  "name": "pizzeria-mario-bros",
+  "version": "1.0.0",
+  "description": "Un site moderne pour la Pizzeria Mario Bros, ciblant principalement les familles avec des enfants, avec des pages Accueil et Contact, et utilisant des couleurs rouge et blanc.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

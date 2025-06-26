@@ -1,7 +1,7 @@
 import type { CompiledStateGraph } from '@langchain/langgraph';
 import 'dotenv/config';
 
-import { designAgent } from '../Agents/design/design.mts';
+import { mygesAgent } from '../Agents/myges/myges.mts';
 
 export interface AgentInfo {
   id: string;
@@ -12,11 +12,11 @@ export interface AgentInfo {
 
 // Registre des agents - Ajoutez vos agents ici
 export const AGENTS_REGISTRY: Record<string, AgentInfo> = {
-  design: {
-    id: 'design',
-    name: 'Design Agent',
-    description: 'Agent expert en création de maquettes de sites vitrines avec génération automatique de designs HTML/CSS',
-    agent: designAgent
+  myges: {
+    id: 'myges',
+    name: 'WebCraft AI',
+    description: 'Agent expert en création de sites web vitrines - de la conception au déploiement',
+    agent: mygesAgent
   }
 };
 

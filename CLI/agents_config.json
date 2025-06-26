@@ -5,11 +5,6 @@
       "id": "myges",
       "name": "MyGES",
       "description": "Agent spécialisé pour MyGES et les informations météo"
-    },
-    {
-      "id": "design",
-      "name": "Design Agent",
-      "description": "Agent expert en création de maquettes de sites vitrines avec génération automatique de designs HTML/CSS"
     }
   ]
 } 
