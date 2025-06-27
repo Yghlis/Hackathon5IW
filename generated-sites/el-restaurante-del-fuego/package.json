@@ -1,9 +1,0 @@
-{
-  "name": "el-restaurante-del-fuego",
-  "version": "1.0.0",
-  "description": "el restaurante del fuego est un fast food qui offre une expérience culinaire rustique et chaleureuse.",
-  "main": "index.html",
-  "scripts": {
-    "start": "npx serve ."
-  }
-}

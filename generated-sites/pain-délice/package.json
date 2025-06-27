@@ -1,9 +1,0 @@
-{
-  "name": "pain-délice",
-  "version": "1.0.0",
-  "description": "Site pour la boulangerie Pain Délice, ciblant les familles locales, avec un style moderne et des couleurs bleu et blanc, comprenant les pages Accueil et Contact.",
-  "main": "index.html",
-  "scripts": {
-    "start": "npx serve ."
-  }
-}

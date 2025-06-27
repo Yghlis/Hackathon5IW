@@ -5,8 +5,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { loadAgentPrompt } from "./generate_prompt.mts";
 import { generateWebsiteMockup } from './tools/image-generator.mts';
-import { generateWebsiteCode } from './tools/code-generator.mts';
-import { deployToVercel } from './tools/vercel-deploy.mts';
+import { deployToVercelTool } from './tools/vercel-deploy.mts';
 import { saveProjectInfo, getProjectInfo, clearProjectInfo } from './tools/project-memory.mts';
 
 const mygesPrompt = loadAgentPrompt('myges');
@@ -27,7 +26,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 const agentCheckpointer = new MemorySaver();
-const tools = [generateWebsiteMockup, generateWebsiteCode, deployToVercel, saveProjectInfo, getProjectInfo, clearProjectInfo];
+const tools = [generateWebsiteMockup, deployToVercelTool, saveProjectInfo, getProjectInfo, clearProjectInfo];
 export const mygesAgent = createReactAgent({
   prompt: mygesPrompt,
   llm: agentModel,

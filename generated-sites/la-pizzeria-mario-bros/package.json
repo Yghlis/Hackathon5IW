@@ -1,0 +1,13 @@
+{
+  "name": "la-pizzeria-mario-bros",
+  "version": "1.0.0",
+  "description": "Site web pour la pizzeria Mario Bros",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'Build complete'"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}

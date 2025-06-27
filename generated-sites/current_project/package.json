@@ -1,9 +1,0 @@
-{
-  "name": "current_project",
-  "version": "1.0.0",
-  "description": "A web project with unspecified details yet approved for deployment.",
-  "main": "index.html",
-  "scripts": {
-    "start": "npx serve ."
-  }
-}

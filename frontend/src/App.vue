@@ -7,7 +7,7 @@ import ChatInterface from './components/ChatInterface.vue'
 <template>
   <div id="app">
     <ChatInterface />
-  </div>
+    </div>
 </template>
 
 <style>

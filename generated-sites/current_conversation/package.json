@@ -1,9 +1,0 @@
-{
-  "name": "current_conversation",
-  "version": "1.0.0",
-  "description": "current_conversation",
-  "main": "index.html",
-  "scripts": {
-    "start": "npx serve ."
-  }
-}
