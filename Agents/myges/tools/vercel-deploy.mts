@@ -64,10 +64,12 @@ Le projet généré ne contient pas de \`package.json\`.
         };
       }
 
-      // Créer/mettre à jour le fichier vercel.json pour Next.js 14 App Router
+      // Créer/mettre à jour le fichier vercel.json pour HTML statique
       const vercelConfig = {
         "version": 2,
-        "framework": "nextjs"
+        "buildCommand": null,
+        "framework": null,
+        "outputDirectory": "."
       };
 
       await fs.writeFile(
@@ -115,14 +117,32 @@ Le projet généré ne contient pas de \`package.json\`.
       
       try {
         const { stdout, stderr } = await execAsync(deployCommand, { 
-          timeout: 300000, // 5 minutes timeout pour le build Next.js
+          timeout: 120000, // 2 minutes timeout pour HTML statique (plus rapide)
           maxBuffer: 1024 * 1024 * 10 // 10MB buffer pour les logs
         });
         
         console.log('📋 Stdout:', stdout);
         if (stderr) console.log('⚠️ Stderr:', stderr);
         
-        // Extraire l'URL de déploiement depuis la sortie de Vercel
+        // ✅ VÉRIFIER QU'IL N'Y A PAS D'ERREUR DE BUILD DANS stderr/stdout
+        const buildErrors = [
+          'Error: No Next.js version detected',
+          'Build failed',
+          'Build error',
+          'Error:',
+          'failed'
+        ];
+        
+        const hasError = buildErrors.some(error => 
+          stdout.toLowerCase().includes(error.toLowerCase()) || 
+          stderr.toLowerCase().includes(error.toLowerCase())
+        );
+        
+        if (hasError) {
+          throw new Error(`Déploiement échoué: ${stderr || stdout}`);
+        }
+        
+        // Extraire l'URL SEULEMENT si pas d'erreur
         const urlMatches = stdout.match(/https:\/\/[^\s]+\.vercel\.app/g);
         let deploymentUrl = urlMatches ? urlMatches[urlMatches.length - 1] : null; // Prendre la dernière URL (production)
         
@@ -158,7 +178,7 @@ Le projet généré ne contient pas de \`package.json\`.
 • Le site fonctionne sur mobile, tablette et ordinateur  
 • Disponible 24h/24, 7j/7
 • Sécurisé avec HTTPS automatique
-• Build Next.js optimisé pour la performance
+• Build HTML/CSS optimisé pour la performance
 
 🔧 **Pour modifier votre site :** Contactez-nous avec vos demandes !`,
                 clickableUrl: deploymentUrl,
